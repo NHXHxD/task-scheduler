@@ -30,9 +30,7 @@ Copy the token provided by BotFather.
 4. Set the Bot Token:
 Open the soure file (taskScheduler.py) and replace "YOUR_TOKEN" with your bot token.
 
-## Configuration
-
-1. Set the Local Timezone:
+5. Set the Local Timezone:
 By default, the bot converts UTC times to the Asia/Ho_Chi_Minh timezone.
 To change the timezone, update the LOCAL_TIMEZONE variable in bot.py
 
