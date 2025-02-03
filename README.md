@@ -37,9 +37,7 @@ To change the timezone, update the LOCAL_TIMEZONE variable in bot.py
 
     ```python
     LOCAL_TIMEZONE = pytz.timezone("Your/Timezone")
-
-Example:
-
-    ```python
+    
+    # Example:
     LOCAL_TIMEZONE = pytz.timezone("America/New_York")
 
