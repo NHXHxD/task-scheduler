@@ -223,8 +223,8 @@ async def error(update: object, context: CallbackContext) -> None:
 
 # Main function
 def main() -> None:
-    # Replace 'YOUR_TOKEN' with your bot's actual token.
-    application = Application.builder().token("7985064507:AAHyneLQm3nK56CDCYllsItkTS2m0QATolE").build()
+    # Replace 'YOUR_TOKEN' with bot's token.
+    application = Application.builder().token("YOUR_TOKEN").build()
 
     conv_handler = ConversationHandler(
         entry_points=[
