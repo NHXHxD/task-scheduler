@@ -104,6 +104,7 @@ async def list_tasks(update: Update, context: CallbackContext) -> None:
     else:
         await update.message.reply_text("🎉 You have no tasks!")
 
+
 # Command: /deletetask
 async def delete_task(update: Update, context: CallbackContext) -> None:
     try:
@@ -140,6 +141,7 @@ async def delete_task(update: Update, context: CallbackContext) -> None:
         
     except (IndexError, ValueError):
         await update.message.reply_text("❌ Usage: /deletetask <task_id>")
+
 
 # Command: /setreminder
 async def set_reminder(update: Update, context: CallbackContext) -> int:
@@ -179,19 +181,11 @@ async def save_reminder(update: Update, context: CallbackContext) -> int:
         
         logger.info("Task %d updated with due_time %s", task_id, due_time)
         
-        # Schedule the reminder using the application's job queue.
-        context.application.job_queue.run_once(
-            send_reminder,
-            when=timedelta(minutes=minutes),
-            chat_id=update.message.chat_id,
-            name=str(task_id),
-            data={"task_name": task[0]}
-        )
-        logger.info("Scheduled reminder for task %d", task_id)
-        
+        # Save reminder without trying to schedule a job
         await update.message.reply_text(
             f"⏰ Reminder set for task {task_id} in {minutes} minutes."
         )
+        
     except Exception as e:
         logger.exception("Error in save_reminder")
         await update.message.reply_text(f"❌ Invalid format or error: {e}")
