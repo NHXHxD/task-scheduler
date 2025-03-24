@@ -108,31 +108,36 @@ async def list_tasks(update: Update, context: CallbackContext) -> None:
 async def delete_task(update: Update, context: CallbackContext) -> None:
     try:
         task_id = int(context.args[0])
+        
+        # First, verify the task exists
+        c.execute(
+            "SELECT id FROM tasks WHERE id = ? AND chat_id = ?",
+            (task_id, update.message.chat_id),
+        )
+        if not c.fetchone():
+            await update.message.reply_text("❌ Task not found.")
+            return
+
+        # Delete the task
         c.execute(
             "DELETE FROM tasks WHERE id = ? AND chat_id = ?",
             (task_id, update.message.chat_id),
         )
         conn.commit()
-        if c.rowcount > 0:
-            await update.message.reply_text(f"✅ Task {task_id} deleted.")
-            # Renumber tasks to maintain sequential IDs.
-            c.execute(
-                "SELECT id FROM tasks WHERE chat_id = ? ORDER BY id",
-                (update.message.chat_id,),
-            )
-            current_ids = [row[0] for row in c.fetchall()]
-            new_id = 1
-            for current in current_ids:
-                if current != new_id:
-                    c.execute(
-                        "UPDATE tasks SET id = ? WHERE id = ? AND chat_id = ?",
-                        (new_id, current, update.message.chat_id),
-                    )
-                    conn.commit()
-                new_id += 1
-            await update.message.reply_text("📝 Tasks have been renumbered.")
-        else:
-            await update.message.reply_text("❌ Task not found.")
+        
+        # Update all tasks with higher IDs
+        c.execute(
+            """
+            UPDATE tasks 
+            SET id = id - 1 
+            WHERE chat_id = ? AND id > ?
+            """,
+            (update.message.chat_id, task_id),
+        )
+        conn.commit()
+        
+        await update.message.reply_text(f"✅ Task {task_id} deleted and IDs reorganized.")
+        
     except (IndexError, ValueError):
         await update.message.reply_text("❌ Usage: /deletetask <task_id>")
 
